@@ -13,6 +13,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SPApi.UnitTests", "SPApi.Un
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Samples.WebApiSqlServerNet6", "Samples\Samples.WebApiSqlServerNet6\Samples.WebApiSqlServerNet6.csproj", "{EE869A4E-AC69-4910-B482-3EEF12F66166}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{BC7F78D4-8CCB-4515-BB7D-8D348EE2E856}"
+	ProjectSection(SolutionItems) = preProject
+		Readme.md = Readme.md
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

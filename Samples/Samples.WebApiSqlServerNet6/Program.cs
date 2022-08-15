@@ -7,7 +7,7 @@ using System.Security.Claims;
 
 // Build the app
 var builder = WebApplication.CreateBuilder(args);
-builder.Services.AddSPApi(settings => settings.EnableHelp = true);
+builder.Services.AddSPApi();
 builder.Services.AddTransient<IDbConnection>(services =>
 {
     var config = services.GetService<IConfiguration>();
