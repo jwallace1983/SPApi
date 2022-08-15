@@ -6,17 +6,15 @@ MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SPApi", "SPApi\SPApi.csproj", "{4E89DEF8-369B-4271-BC03-EFAD42CEDE3F}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Core", "Core", "{CBFC5CA7-AD8E-407D-B851-25E144BC73A3}"
+	ProjectSection(SolutionItems) = preProject
+		Readme.md = Readme.md
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Samples", "Samples", "{D4BAD710-61C4-4295-A7E7-48D72CABB274}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SPApi.UnitTests", "SPApi.UnitTests\SPApi.UnitTests.csproj", "{043734AC-B334-42E3-90E2-8FD44DC33E56}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Samples.WebApiSqlServerNet6", "Samples\Samples.WebApiSqlServerNet6\Samples.WebApiSqlServerNet6.csproj", "{EE869A4E-AC69-4910-B482-3EEF12F66166}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{BC7F78D4-8CCB-4515-BB7D-8D348EE2E856}"
-	ProjectSection(SolutionItems) = preProject
-		Readme.md = Readme.md
-	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
