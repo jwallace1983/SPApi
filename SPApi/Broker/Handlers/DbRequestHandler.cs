@@ -25,6 +25,8 @@ namespace SPApi.Broker.Handlers
             const string SQL = @"
 SELECT COUNT(*) FROM sys.extended_properties WHERE name = 'api'
     AND major_id = object_id(N'[' + @Schema + N'].[' + @Object + N']')";
+            if (_queryHandlers.Value.ContainsKey(dataRequest.Context ?? string.Empty) == false)
+                return false; // No query handler found
             using var db = _services.GetService<IDbConnection>();
             var rowCount = await db.ExecuteScalarAsync<int>(SQL, new
             {
@@ -36,20 +38,47 @@ SELECT COUNT(*) FROM sys.extended_properties WHERE name = 'api'
 
         public async Task ProcessRequest(DataRequest dataRequest, HttpResponse response)
         {
-            var queryResults = await this.GetQueryResults(dataRequest);
-            await WriteResponse(response, queryResults);
+            using var db = _services.GetService<IDbConnection>();
+            var queryResult = _queryHandlers.Value[dataRequest.Context ?? string.Empty](db, dataRequest);
+            await WriteResponse(response, queryResult);
         }
 
-        public async Task<IEnumerable<object>> GetQueryResults(DataRequest dataRequest)
+        public delegate Task<object> QueryHandler(IDbConnection db, DataRequest dataRequest);
+        public static readonly Lazy<Dictionary<string, QueryHandler>> _queryHandlers = new(() =>
+            new Dictionary<string, QueryHandler>(StringComparer.OrdinalIgnoreCase)
+            {
+                { "multiple", GetQueryResultMultiple },
+                { "record", GetQueryResultRecord },
+                { "scalar", GetQueryResultScalar },
+                { string.Empty, GetQueryResultQuery },
+            });
+
+        public static async Task<object> GetQueryResultMultiple(IDbConnection db, DataRequest dataRequest)
+            => await db.QueryMultipleAsync($"[{dataRequest.Schema}].[{dataRequest.Object}]",
+                    param: GetQueryParameters(dataRequest), commandTimeout: dataRequest.CommandTimeout,
+                    commandType: CommandType.StoredProcedure);
+
+        public static async Task<object> GetQueryResultRecord(IDbConnection db, DataRequest dataRequest)
+            => await db.QueryFirstOrDefaultAsync($"[{dataRequest.Schema}].[{dataRequest.Object}]",
+                    param: GetQueryParameters(dataRequest), commandTimeout: dataRequest.CommandTimeout,
+                    commandType: CommandType.StoredProcedure);
+
+        public static async Task<object> GetQueryResultScalar(IDbConnection db, DataRequest dataRequest)
+            => await db.ExecuteScalarAsync($"[{dataRequest.Schema}].[{dataRequest.Object}]",
+                    param: GetQueryParameters(dataRequest), commandTimeout: dataRequest.CommandTimeout,
+                    commandType: CommandType.StoredProcedure);
+
+        public static async Task<object> GetQueryResultQuery(IDbConnection db, DataRequest dataRequest)
+            => await db.QueryAsync($"[{dataRequest.Schema}].[{dataRequest.Object}]",
+                    param: GetQueryParameters(dataRequest), commandTimeout: dataRequest.CommandTimeout,
+                    commandType: CommandType.StoredProcedure);
+
+        public static Dictionary<string, object> GetQueryParameters(DataRequest dataRequest)
         {
-            using var db = _services.GetService<IDbConnection>();
             var parameters = dataRequest.Parameters.ToDictionary(m => m.Key, m => GetValue((JsonElement)m.Value));
             parameters["_user"] = dataRequest.User;
             parameters["_claims"] = JsonSerializer.Serialize(dataRequest.Claims);
-            return await db.QueryAsync($"[{dataRequest.Schema}].[{dataRequest.Object}]",
-                param: parameters,
-                commandTimeout: dataRequest.CommandTimeout,
-                commandType: CommandType.StoredProcedure);
+            return parameters;
         }
 
         public static object GetValue(JsonElement element)
@@ -64,11 +93,11 @@ SELECT COUNT(*) FROM sys.extended_properties WHERE name = 'api'
             };
         }
 
-        public static async Task WriteResponse(HttpResponse response, IEnumerable<object> queryResults)
+        public static async Task WriteResponse(HttpResponse response, object queryResult)
         {
             response.StatusCode = 200;
             response.ContentType = "application/json";
-            await response.WriteAsync(JsonSerializer.Serialize(queryResults));
+            await response.WriteAsync(JsonSerializer.Serialize(queryResult));
         }
     }
 }
