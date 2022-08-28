@@ -39,7 +39,7 @@ SELECT COUNT(*) FROM sys.extended_properties WHERE name = 'api'
         public async Task ProcessRequest(DataRequest dataRequest, HttpResponse response)
         {
             using var db = _services.GetService<IDbConnection>();
-            var queryResult = _queryHandlers.Value[dataRequest.Context ?? string.Empty](db, dataRequest);
+            var queryResult = await _queryHandlers.Value[dataRequest.Context ?? string.Empty](db, dataRequest);
             await WriteResponse(response, queryResult);
         }
 

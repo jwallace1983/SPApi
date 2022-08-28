@@ -4,7 +4,7 @@
 		<TargetFramework>net6</TargetFramework>
 		<ImplicitUsings>disable</ImplicitUsings>
 		<Nullable>disable</Nullable>
-		<Version>1.0.1</Version>
+		<Version>1.0.2</Version>
 		<Title>SPApi</Title>
 		<Authors>Simplelink</Authors>
 		<Company>Simplelink</Company>
@@ -12,7 +12,7 @@
 		<Description>A lightweight API designed to easily and securely expose stored procedures as endpoints.</Description>
 		<RepositoryUrl>https://github.com/jwallace1983/SPApi</RepositoryUrl>
 		<RepositoryType>git</RepositoryType>
-		<PackageReleaseNotes>Adding support for multiple query types</PackageReleaseNotes>
+		<PackageReleaseNotes>Customize error and not found handling</PackageReleaseNotes>
 		<PackageProjectUrl>https://github.com/jwallace1983/SPApi</PackageProjectUrl>
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
 		<PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>

@@ -42,6 +42,7 @@ Use the settings when configuring dependency injection to customize usage of the
 * Change the endpoint for the api
 * Enable help documentation for endpoints
 * Enable non-https requests
+* Customize error and not found handling
 
 For example, to enable help documentation, but only when a pre-shared header for "x-spapi-key" matches:
 
@@ -51,6 +52,7 @@ builder.Services.AddSPApi(settings =>
 {
     settings.EnableHelp = true;
     settings.HelpKey = "my-secret-key";
+	settings.UseErrorHandler((httpContext, ex) => { /* Custom error handling */ });
 });
 ```
 

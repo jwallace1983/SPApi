@@ -30,10 +30,10 @@ namespace SPApi.Broker
         {
             if (!this.ValidateRequest(context.Request))
                 await next(); // Guard: do not process
-            var dataRequest = await GetDbRequest(context.Request, context.User);
             try
             {
                 // Use handler to process request
+                var dataRequest = await GetDbRequest(context.Request, context.User);
                 foreach (var handler in _handlers)
                 {
                     if (await handler.CanHandle(dataRequest, context.Request))
@@ -44,12 +44,12 @@ namespace SPApi.Broker
                 }
 
                 // No handler matched, so show not found
-                ShowNotFound(context.Response);
+                await _settings.HandleNotFound(context);
             }
             catch (Exception ex)
             {
                 // Display the error message
-                await ShowError(context.Response, ex);
+                await _settings.HandleError(context, ex);
             }
         }
 
@@ -79,17 +79,16 @@ namespace SPApi.Broker
             return request;
         }
 
-        public static void ShowNotFound(HttpResponse response)
+        public static Task ShowNotFound(HttpContext context)
         {
-            response.Clear();
-            response.StatusCode = 404;
+            context.Response.StatusCode = 404;
+            return Task.CompletedTask;
         }
 
-        public static async Task ShowError(HttpResponse response, Exception ex)
+        public static async Task ShowError(HttpContext context, Exception ex)
         {
-            response.Clear();
-            response.StatusCode = 500;
-            await response.WriteAsync("Application Error");
+            context.Response.StatusCode = 500;
+            await context.Response.WriteAsync("Application Error");
             Console.WriteLine(ex.Message);
         }
 

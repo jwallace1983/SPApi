@@ -2,12 +2,22 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using System;
 using System.Data;
 using System.Security.Claims;
 
 // Build the app
 var builder = WebApplication.CreateBuilder(args);
-builder.Services.AddSPApi();
+builder.Services.AddSPApi(settings =>
+{
+    settings.EnableHelp = true;
+    settings.HelpKey = "secret-key";
+    settings.UseErrorHandler((context, ex) =>
+    {
+        Console.WriteLine(ex.Message); // Custom error handler
+        return System.Threading.Tasks.Task.CompletedTask;
+    });
+});
 builder.Services.AddTransient<IDbConnection>(services =>
 {
     var config = services.GetService<IConfiguration>();
