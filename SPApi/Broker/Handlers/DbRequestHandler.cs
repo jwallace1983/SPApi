@@ -14,10 +14,12 @@ namespace SPApi.Broker.Handlers
     public class DbRequestHandler : IRequestHandler
     {
         private readonly IServiceProvider _services;
+        private readonly Settings _settings;
 
-        public DbRequestHandler(IServiceProvider services)
+        public DbRequestHandler(IServiceProvider services, Settings settings)
         {
             _services = services;
+            _settings = settings;
         }
 
         public async Task<bool> CanHandle(DataRequest dataRequest, HttpRequest request)
@@ -40,7 +42,7 @@ SELECT COUNT(*) FROM sys.extended_properties WHERE name = 'api'
         {
             using var db = _services.GetService<IDbConnection>();
             var queryResult = await _queryHandlers.Value[dataRequest.Context ?? string.Empty](db, dataRequest);
-            await WriteResponse(response, queryResult);
+            await WriteResponse(response, queryResult, _settings);
         }
 
         public delegate Task<object> QueryHandler(IDbConnection db, DataRequest dataRequest);
@@ -93,11 +95,11 @@ SELECT COUNT(*) FROM sys.extended_properties WHERE name = 'api'
             };
         }
 
-        public static async Task WriteResponse(HttpResponse response, object queryResult)
+        public static async Task WriteResponse(HttpResponse response, object queryResult, Settings settings)
         {
             response.StatusCode = 200;
             response.ContentType = "application/json";
-            await response.WriteAsync(JsonSerializer.Serialize(queryResult));
+            await response.WriteAsync(JsonSerializer.Serialize(queryResult, settings.JsonSerializerOptions));
         }
     }
 }

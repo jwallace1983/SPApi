@@ -53,6 +53,7 @@ builder.Services.AddSPApi(settings =>
     settings.EnableHelp = true;
     settings.HelpKey = "my-secret-key";
 	settings.UseErrorHandler((httpContext, ex) => { /* Custom error handling */ });
+	settings.JsonSerializerOptions; // Customize any Json serialization options (camelCase is default)
 });
 ```
 

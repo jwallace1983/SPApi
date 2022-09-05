@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Http;
 using SPApi.Broker;
 using System;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace SPApi
@@ -14,6 +16,13 @@ namespace SPApi
         public string HelpKey { get; set; }
 
         public bool RequireHttps { get; set; } = true;
+
+        public JsonSerializerOptions JsonSerializerOptions { get; set; } = new()
+            {
+                PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+                DictionaryKeyPolicy = JsonNamingPolicy.CamelCase,
+                DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
+            };
 
         public void UseNotFoundHandler(Func<HttpContext, Task> handler)
             => this.HandleNotFound = handler;
